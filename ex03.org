@@ -1,0 +1,535 @@
+#+TITLE: Exercise 3: Conditional and alternative statements
+#+AUTHOR: S Milton Rajendram
+
+#+LaTeX_HEADER: \usepackage{palatino}
+#+LaTeX_HEADER: \usepackage[top=1in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
+#+LaTeX_HEADER: \usepackage{setspace}
+#+OPTIONS: toc:nil
+
+#+BEGIN_EXPORT latex
+\linespread{1.2}
+#+END_EXPORT
+#+PROPERTY: header-args :exports none
+* Conditional and alternative statements
+  1. Write a program that asks the user for a time in 24-hour format,
+     then displays it in 12-hour format. Represent the time with a
+     pair of integers (hours, minutes) .
+     #+BEGIN_SRC C :var hour=20 :var min=35
+       char *period = "am";
+       if (hour > 12) {
+          hour -= 12;
+	  period = "pm";
+       }
+       printf ("%2d %2d %s\n", hour, min, period);
+     #+END_SRC
+
+     #+RESULTS:
+     : 8 35 pm
+
+  2. Represent time by 3 integers representing the hours, minutes,
+     and seconds.  Construct a function that takes two times and
+     returns -1, 0, or +1 depending on whether the first time is
+     earlier than the second one, same as the second one, or later
+     than the second one. Write a driver program to test the function.
+     #+NAME: date-compare
+     #+BEGIN_SRC C :cmdline <date-compare.in :includes <stdio.h>
+       int date_compare (int y1, int m1, int d1, int y2, int m2, int d2) {
+	 if (y1 < y2)
+	   return -1;
+	 else if (y1 > y2)
+	   return 1;
+	 if (m1 < m2)
+	   return -1;
+	 else if (m1 > m2)
+	   return 1;
+	 if (d1 < d2)
+	   return -1;
+	 else if (d1 > d2)
+	   return 1;
+	 return 0;
+       }
+
+       int main () {
+	 int y1, m1, d1, y2, m2, d2;
+	 while (scanf("%d%d%d%d%d%d", &y1, &m1, &d1, &y2, &m2, &d2) != EOF) {
+	   int order = date_compare(y1, m1, d1, y2, m2, d2);
+	   printf ("%d/%d/%d, %d/%d/%d, %d\n", y1, m1, d1, y2, m2, d2, order );
+	 }
+       }
+     #+END_SRC
+
+     #+RESULTS: date-compare
+     | 2010/10/12 | 2014/10/12 | -1 |
+     | 2014/10/12 | 2010/10/12 |  1 |
+     | 2010/5/12  | 2010/11/12 | -1 |
+     | 2010/11/12 | 2010/5/12  |  1 |
+     | 2010/5/12  | 2010/5/25  | -1 |
+     | 2010/5/25  | 2010/5/12  |  1 |
+     | 2010/5/12  | 2010/5/12  |  0 |
+
+  3. Write a program to calculate the time difference between two
+     times, represented in (hours, minutes, seconds) format.
+     #+BEGIN_SRC C :var h1=10 :var m1=20 :var s1=10 :var h2=14 :var m2=10 :var s2=5
+       if (s2 < s1) {
+	 s2 += 60;
+	 m2 -= 1;
+       }
+       if (m2 < m1) {
+	 m2 += 60;
+	 h2 -= 1;
+       }
+       printf ("%d %d %d\n", h2-h1, m2-m1, s2-s1);
+     #+END_SRC
+
+     #+RESULTS:
+     : 3 49 55
+  4. Write a program that finds the smallest and the largest of four
+     integers entered by the user.
+     #+NAME: min_max
+     #+BEGIN_SRC C :cmdline <min_max.in
+       #include <stdio.h>
+       int main ()
+       {
+	 int a, b, c, d, min, max;
+	 while (scanf("%d%d%d%d", &a, &b, &c, &d) != EOF) {
+	   max = a;
+	   min = a;
+	   if (b > max)
+	     max = b;
+	   else if (b < min) 
+	     min = b;
+	   if (c > max)
+	     max = c;
+	   else if (c < min)
+	     min = c;
+	   if (d > max)
+	     max = d;
+	   else if (d < min)
+	     min = d;
+	   printf ("%d %d\n", min, max);
+	 }
+       }
+     #+END_SRC
+
+     #+RESULTS: min_max
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+     | 10 | 40 |
+
+  5. Anna University converts the marks in an exam to letter grades
+     according to the following table:
+     | Mark range | Grade points | Leter grade |
+     |     91-100 |           10 | S           |
+     |      81-90 |            9 | A           |
+     |      71-80 |            8 | B           |
+     |      61-70 |            7 | C           |
+     |      57-60 |            6 | D           |
+     |      51-56 |            5 | E           |
+     |        <50 |            0 | U           |
+     Write a function to translate the marks of a student in a
+     semester into letter grades. Assume 8 exams in a semester. Let
+     your program read 8 marks, then print the marks and the grades.
+     #+NAME: grade
+     #+BEGIN_SRC C :cmdline <grade.in
+       #include <stdio.h>
+
+       int main ()
+       {
+         int mark;
+	 char grade;
+1
+	 while (scanf ("%d", &mark) != EOF) {
+	   if (mark > 90)
+	     grade = 'S';
+	   else if (mark > 80)
+	     grade = 'A';
+	   else if (mark > 70)
+	     grade = 'B';
+	   else if (mark > 60)
+	     grade = 'C';
+	   else if (mark > 56)
+	     grade = 'D';
+	   else if (mark > 50)
+	     grade = 'E';
+	   else
+	     grade = 'U';
+	   printf ("%d %c\n", mark, grade);
+	 }
+       }
+     #+END_SRC
+
+     #+RESULTS: grade
+     | 65 | C |
+     | 95 | S |
+     | 75 | B |
+     | 85 | A |
+     | 55 | E |
+     | 45 | U |
+  6. Construct a tariff calculator for the Domestic Electricity Bills
+     of TNEB, based on the following slab rates:
+     1. Consumption upto 100 units: free.
+     2. Consumption above 100 units and upto 200 units: Rs 1.50 per unit.
+     3. Consumption above 200 units and upto 500 units: Rs 2.00 per
+        unit for 101-200 units and Rs 3.00 per unit for 201-500
+        units.
+     4. Consumption above 500 units: Rs 3.50 per unit for 101-200
+        units, Rs 4.60 per unit for 201-500 units, and Rs 6.60
+        beyond 500 units.
+     #+NAME: tariff
+     #+BEGIN_SRC C :cmdline <tariff.in
+       #include <stdio.h>
+
+       int main ()
+       {
+	 int units;
+	 float amount;
+  
+	 while (scanf("%d", &units) != EOF) {
+	   if (units < 100)
+	     amount = 0;
+	   else if (units < 200)
+	     amount = (units - 100)*1.5;
+	   else if (units < 500)
+	     amount = (200-100) * 2.0 + (units-200)*3.0;
+	   else
+	     amount = 100 * 4.6 + 300 * 4.6 + (units-500)* 6.6;
+	   printf ("%d %f\n", units, amount);
+	 }
+       }
+     #+END_SRC
+
+     #+RESULTS: tariff
+     | 600 | 2500.0 |
+     | 400 |  800.0 |
+     | 250 |  350.0 |
+     |  75 |    0.0 |
+
+  7. *How much Income Tax do I need to pay?* How much tax you should
+     pay depends upon the tax slab applicable to your income.  
+     #+BEGIN_COMMENT
+     Income tax is calculated on the basis of these tax slabs.
+     #+END_COMMENT
+     1. Income Tax Slab for Individual Tax Payers (Less Than
+        60 Years Old)
+        | Income Slab                | Tax Rate |
+        | Up to Rs.2,50,000          |   No tax |
+        | Rs.2,50,000 - Rs.5,00,000  |       5% |
+        | Rs.5,00,000 - Rs.10,00,000 |      20% |
+        | Rs.10,00,000 and beyond    |      30% |
+        To the tax, add cess: 3% on total of income tax. Write a
+        function to calculate the tax to be paid.
+        #+NAME: income-tax
+        #+BEGIN_SRC C :cmdline <income-tax.in
+	  #include <stdio.h>
+
+	  int main ()
+	  {
+	    int age;
+	    int income;
+	    float tax;
+  
+	    while (scanf("%d%d", &age, &income) != EOF) {
+	      if (income <= 250000)
+		tax = 0.0;
+	      else if (income <= 500000)
+		tax = (income - 250000)*5.0/100;
+	      else if (income <= 1000000)
+		tax = (500000-250000)*5.0/100 + (income - 500000)*20.0/100;
+	      else
+		tax = (500000-250000)*5.0/100 + (1000000 - 500000)*20.0/100 + (income - 1000000)*30.0/100;
+	      tax += tax*3.0/100;
+	      printf ("%d %f\n", income, tax);
+	    }
+	  }
+         #+END_SRC
+     2. Income Tax Slab for Senior Citizens (60 Years Old Or
+        More but Less than 80 Years Old)
+	| Income Slab                | Tax Rate |
+	| Up to Rs.3,00,000          |   No tax |
+	| Rs.3,00,000 - Rs.5,00,000  |       5% |
+	| Rs.5,00,000 - Rs.10,00,000 |      20% |
+	| Rs.10,00,000 and beyond    |      30% |
+	Modify your function to take the age and the income as the
+	parameters and calculate the tax.
+	#+BEGIN_SRC C :cmdline <income-tax.in
+	  #include <stdio.h>
+
+	  int main ()
+	  {
+	    int age;
+	    int income;
+	    int slab[2] = {250000, 300000};
+	    int slab1;
+	    float tax;
+  
+	    while (scanf("%d%d", &age, &income) != EOF) {
+	      if (age <= 60)
+	        slab1 = slab[0];
+	      else
+	        slab1 = slab[1];
+	      if (income <= slab1)
+		tax = 0.0;
+	      else if (income <= 500000)
+		tax = (income - slab1)*5.0/100;
+	      else if (income <= 1000000)
+		tax = (500000-slab1)*5.0/100 + (income - 500000)*20.0/100;
+	      else
+		tax = (500000-slab1)*5.0/100 + (1000000 - 500000)*20.0/100 + (income - 1000000)*30.0/100;
+	      tax += tax*3.0/100;
+	      printf ("%d %f\n", income, tax);
+	    }
+	  }
+
+	#+END_SRC
+     3. Income Tax Slab for Senior Citizens (60 Years Old Or
+        More but Less than 80 Years Old)
+	| Income Slab                | Tax Rate |
+	| Up to Rs.2,50,000          | No tax   |
+	| Rs.2,50,000 - Rs.5,00,000  | No tax   |
+	| Rs.5,00,000 - Rs.10,00,000 | 20%      |
+	| Rs.10,00,000 and beyond    | 30%      |
+	Modify your function to take the age and the income as the
+	parameters and calculate the tax.
+
+  8. In a sequence of integers =a0, a1, a2, a3=, any pair of integers
+     =(ai, aj)= is said to be an /inversion/ if =ai > aj= for =i <
+     j=.
+     1. Write a program to correct/order all the inversions in the
+	sequence. Do not use a loop.
+	#+NAME: count_inversion
+	#+BEGIN_SRC C :cmdline <min_max.in
+	  #include <stdio.h>
+	  #include <stdbool.h>
+
+	  int main ()
+	  {
+	    int a, b, c, d;
+	    int t;
+	    bool inverted;
+	    int n;
+
+	    while (scanf("%d%d%d%d", &a, &b, &c, &d) != EOF) {
+	      printf ("%d %d %d %d ", a, b, c, d);
+	      inverted = true;
+	      n = 0;
+	      while (inverted) {
+		inverted = false;
+		if (a > b) {
+		  t = a; a = b; b = t;
+		  inverted = true;
+		  n += 1;
+		}
+		else if (b > c) {
+		  t = b; b = c; c = t;
+		  inverted = true;	
+		  n += 1;
+		}
+		else if (c > d) {
+		  t = c; c = d; d = t;
+		  inverted = true;	
+		  n += 1;
+		}
+	      }
+	      printf ("%d\n", n);
+	    }
+	    return 0;
+	  }
+	#+END_SRC
+
+	#+RESULTS: count_inversion
+	| 10 | 20 | 30 | 40 | 0 |
+	| 10 | 20 | 40 | 30 | 1 |
+	| 10 | 30 | 20 | 40 | 1 |
+	| 10 | 30 | 40 | 20 | 2 |
+	| 10 | 40 | 20 | 30 | 2 |
+	| 10 | 40 | 30 | 20 | 3 |
+	| 20 | 10 | 30 | 40 | 1 |
+	| 20 | 10 | 40 | 30 | 2 |
+	| 20 | 30 | 10 | 40 | 2 |
+	| 20 | 30 | 40 | 10 | 3 |
+	| 20 | 40 | 10 | 30 | 3 |
+	| 20 | 40 | 30 | 10 | 4 |
+	| 30 | 10 | 20 | 40 | 2 |
+	| 30 | 10 | 40 | 20 | 3 |
+	| 30 | 20 | 10 | 40 | 3 |
+	| 30 | 20 | 40 | 10 | 4 |
+	| 40 | 10 | 20 | 30 | 3 |
+	| 40 | 10 | 30 | 20 | 4 |
+	| 40 | 20 | 10 | 30 | 4 |
+	| 40 | 20 | 30 | 10 | 5 |
+	| 40 | 30 | 10 | 20 | 5 |
+	| 40 | 30 | 20 | 10 | 6 |
+
+     2. Write a single loop program that corrects the inversions. Use
+        as few =if= statements as possible. Four if statements are
+        sufficient.
+* COMMENT Extra programs
+  1. Define a function =sign(x)= that returns -1 or 0 or 1, depending
+     on whether =x= is a negative number, zero or a positive number,
+     respectively. Test it.
+  2. When stocks are sold or purchased through a broker, the broker's
+     commission is computed using a sliding scale that depends on the
+     value of the stocks traded. Suppose a broker charges the amount
+     as shown in the table.
+     | Transaction amount | Commission rate |
+     | Under 2,500        | 30 + 1.7%       |
+     | 2,500--6,250       | 56 + 0.66%      |
+     | 6,250--20,000      | 76 + 0.34%      |
+     | 20,000--50,000     | 100 + 0.22%     |
+     | 50,000--500,000    | 155 + 0.11%     |
+     | Over 500,000       | 255 + 0.09      |
+     The minimum charge is Rs 39. Write a program that asks the user
+     to enter the amount, then displays the amount of the commission.
+  3. Write a program that asks the user for a two-digit number, then
+     prints the English word for the number.
+     #+NAME: num-to-words
+     #+BEGIN_SRC C :cmdline <num-to-words.in
+       #include <stdio.h>
+
+       int main ()
+       {
+	 int num;
+	 char *one_string[] = {"", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};  
+	 char *ten_string[] = {"", "", "twenty", "thrity", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
+	 char *ten_to_twenty[] = {"Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+	 int tens, ones;
+	 while (scanf ("%d", &num) != EOF) {
+	   printf ("%d ", num);
+	   tens = num / 10;
+	   ones = num % 10;
+	   switch (tens) {
+	   case 0:
+	     printf ("%s\n", one_string[ones]);
+	     break;
+	   case 1:
+	     printf ("%s\n", ten_to_twenty[ones]);
+	     break;
+	   default:
+	     printf ("%s %s\n", ten_string[tens], one_string[ones]);
+	   }
+	 }
+       }
+     #+END_SRC
+
+     #+RESULTS: num-to-words
+     |  1 | one      |      |
+     |  9 | nine     |      |
+     | 10 | Ten      |      |
+     | 11 | Eleven   |      |
+     | 19 | Nineteen |      |
+     | 20 | twenty   |      |
+     | 21 | twenty   | one  |
+     | 29 | twenty   | nine |
+     | 89 | eighty   | nine |
+     | 90 | ninety   |      |
+     | 91 | ninety   | one  |
+     | 99 | ninety   | nine |
+
+  4. Contracts and legal documents are often dated in the following
+     format: 
+     =Dated this ______ day of ______, 20__.=
+     Write a program that displays the dates in this form.
+     #+BEGIN_SRC C :cmdline <legal-format.in
+       #include <stdio.h>
+
+       char* suffix (int day)
+       {
+	 switch (day) {
+	 case 1: case 21: case 31:
+	   return "st";
+	 case 2: case 22:
+	   return "nd";
+	 case 3: case 23:
+	   return "rd";
+	 default:
+	   return "th";
+	 }
+       }
+
+       char *month_word[] = {"",
+			"January",
+			"February",
+			"March",
+			"April",
+			"May",
+			"June",
+			"July",
+			"August",
+			"September",
+			"October",
+			"November",
+			"December"};
+       int main ()
+       {
+	 int  year, month, day;
+  
+	 while (scanf ("%d%d%d", &day, &month, &year) != EOF) {
+	   printf ("%d %d %d ", day, year, month);
+	   printf ("Dated this %d%s day of %s, 20%d\n", day, suffix(day), month_word[month], year);
+	 }
+       }
+     #+END_SRC
+
+     #+RESULTS:
+     | 1 17 1 Dated this 1st day of January     | 2017 |
+     | 2 17 2 Dated this 2nd day of February    | 2017 |
+     | 3 17 3 Dated this 3rd day of March       | 2017 |
+     | 4 17 4 Dated this 4th day of April       | 2017 |
+     | 10 17 10 Dated this 10th day of October  | 2017 |
+     | 11 17 11 Dated this 11th day of November | 2017 |
+     | 20 17 12 Dated this 20th day of December | 2017 |
+     | 21 17 5 Dated this 21st day of May       | 2017 |
+     | 22 17 6 Dated this 22nd day of June      | 2017 |
+     | 23 17 7 Dated this 23rd day of July      | 2017 |
+     | 30 17 8 Dated this 30th day of August    | 2017 |
+     | 31 17 9 Dated this 31st day of September | 2017 |
+  5. Write a program to calculate the age of a person, given her date
+     of birth. Assume that the dates are represented by 3-tuples of
+     integers, (year, month, day).
+  6. A company decides to give bonus to all its employees for
+     Diwali. A 5\% bonus on the salary is given to the male employees
+     and 10\% bonus on the salary to the female employees. An employee
+     with salary below Rs. 10000 gets an additional 2\%
+     bonus. Calculate the bonus for an employee and the total pay, for
+     the month.
+  7. The parking charges at Chennai International Airport Car Park and
+     Charges are as below:
+     | Type    | Car | Coach | Two Wheeler |
+     | Charges | 100 |   110 |          25 |
+     The rates given above are applicable for 2 hours. After 2 hours,
+     rate will increase by Rs. 20 per hour. The parking rate beyond 7
+     hours up to 24 hours will be Rs. 200 and every 24 hours or part
+     thereof. Maximum 10 minutes free parking shall be allowed in the
+     designated areas for pick up and drop of passengers beyond which
+     the parking charges shall be applicable. The 10 minutes time
+     limit shall be calculated from the computerized entry booth to
+     the exit booth.
+
+     Write a program to calculate the parking charge, given the type,
+     entry time, and exit time of the vehicle. Represent time as a
+     3-tuple (year, month, day, hour, min).
+  8. Represent a date by 3 integers representating the year, month and
+     day of the date.  Design a function that takes two dates and
+     returns -1, 0, or +1 depending on whether the first date is
+     earlier than the second date, same as the second date, or later
+     than the second date. Write a driver program to test the
+     function.
